@@ -14,7 +14,7 @@ public class PlayerResponder : MonoBehaviour
 
     private void OnEnable()
     {
-        GridManager grid = GridManager.singleton;
+        LevelManager grid = LevelManager.singleton;
         if (grid)
         {
             grid.RegisterTile(this);
@@ -23,7 +23,7 @@ public class PlayerResponder : MonoBehaviour
 
     private void OnDisable()
     {
-        GridManager grid = GridManager.singleton;
+        LevelManager grid = LevelManager.singleton;
         if (grid)
         {
             grid.UnregisterTile(this);

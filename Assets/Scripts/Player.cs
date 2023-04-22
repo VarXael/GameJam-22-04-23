@@ -46,15 +46,15 @@ public class Player : MonoBehaviour
                 // hmm I guess since this is a tile-based game we only want to move one axis at a time (new to me)
                 if (movementIntent.x != 0)
                 {
-                    moveTargetPosition = new Vector3(transform.position.x + GridManager.singleton.tileSize * Mathf.Sign(movementIntent.x), transform.position.y, transform.position.z);
+                    moveTargetPosition = new Vector3(transform.position.x + LevelManager.singleton.tileSize * Mathf.Sign(movementIntent.x), transform.position.y, transform.position.z);
                 }
                 else if (movementIntent.z != 0)
                 {
-                    moveTargetPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z + GridManager.singleton.tileSize * Mathf.Sign(movementIntent.z));
+                    moveTargetPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z + LevelManager.singleton.tileSize * Mathf.Sign(movementIntent.z));
                 }
 
                 moveSourcePosition = transform.position;
-                moveTargetPosition = GridManager.singleton.GetSnappedPosition(moveTargetPosition);
+                moveTargetPosition = LevelManager.singleton.GetSnappedPosition(moveTargetPosition);
                 transform.rotation = Quaternion.LookRotation(moveTargetPosition - moveSourcePosition);
 
                 moveProgess = 0f;
@@ -72,11 +72,9 @@ public class Player : MonoBehaviour
 
                 // hack cus FindObjectsOfType is bad: enact player movement responders now
                 foreach (var movementResponder in FindObjectsOfType<PlayerResponder>())
-                {
                     movementResponder.onPlayerMoved?.Invoke(1);
-                }
 
-                GridManager.singleton.OnPlayerSteppedTo(moveTargetPosition);
+                LevelManager.singleton.OnPlayerSteppedTo(moveTargetPosition);
             }
         }
         else
@@ -88,7 +86,7 @@ public class Player : MonoBehaviour
 
             if (moveProgess >= 1f)
             {
-                transform.position = GridManager.singleton.GetSnappedPosition(transform.position);
+                transform.position = LevelManager.singleton.GetSnappedPosition(transform.position);
                 isMoving = false;
             }
         }
@@ -100,5 +98,8 @@ public class Player : MonoBehaviour
         {
             playerResponder.onPlayerDied?.Invoke(reason);
         }
+
+        // todo massive explosion VFX?
+        gameObject.SetActive(false);
     }
 }
