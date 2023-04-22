@@ -30,7 +30,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2712261612540182123
 MonoBehaviour:
@@ -46,6 +46,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridTileGO: {fileID: 638012327506279528, guid: 25b790e5aff39f045aab8eef6ec3f0de, type: 3}
   playerGO: {fileID: 6896666896140253937, guid: 5bb7d11ab49647f48b480361ee1ffdcb, type: 3}
-  levelsPrefab: []
+  levelsPrefab:
+  - {fileID: 370997482009231950, guid: 91d54fee02c2bcd4ca588c8facfcc1fe, type: 3}
+  - {fileID: 866518345991945354, guid: 7f742c68a41b09a4a9ee729b1d39fe83, type: 3}
   gridSize: {x: 4, y: 4}
   tileSize: 1
