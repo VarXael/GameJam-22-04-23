@@ -50,7 +50,6 @@ public class Player : MonoBehaviour
                     int targetTime = Mathf.RoundToInt(moveTargetPosition.x - positionOfZeroTime.x);
                     if (targetTime != TimeManager.singleton.currentTime)
                     {
-                        Debug.Log($"Player advancing time by {targetTime - TimeManager.singleton.currentTime}");
                         TimeManager.singleton.StepTimeBy(targetTime - TimeManager.singleton.currentTime);
                     }
                 }
