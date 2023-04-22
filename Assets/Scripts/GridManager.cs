@@ -2,19 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
-public class Grid : MonoBehaviour
+public class GridManager : MonoBehaviour
 {
-    public static Grid singleton
+    public static GridManager singleton
     {
         get
         {
             if (_singleton == null)
-                _singleton = FindObjectOfType<Grid>();
+                _singleton = FindObjectOfType<GridManager>();
             return _singleton;
         }
     }
-    private static Grid _singleton;
+    private static GridManager _singleton;
 
     public GameObject gridTileGO;
     public GameObject playerGO;
