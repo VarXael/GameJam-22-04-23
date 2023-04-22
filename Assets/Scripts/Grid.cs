@@ -18,22 +18,25 @@ public class Grid : MonoBehaviour
 
     public GameObject gridTileGO;
     public GameObject playerGO;
+    public Level[] levelsPrefab;
     public Vector2 gridSize;
     public float tileSize = 1f;
-    public Vector2 playerStart;
 
 
     void Start()
     {
-        Instantiate(playerGO, new Vector3(Mathf.Clamp(playerStart.y - 1, 0, gridSize.y - 1), 0, Mathf.Clamp(playerStart.y - 1, 0, gridSize.y - 1)), playerGO.transform.rotation);
+        SpawnGrid();
+    }
 
-        for (int x = 0; x < gridSize.x; x++)
-        {
-            for(int y = 0; y < gridSize.y; y++)
-            {
-                Instantiate(gridTileGO, new Vector3(x, 0, y), gridTileGO.transform.rotation);
-            }
-        }
+    //Spawns grid, by default it takes a random grid in the levelsPrefab array and spawns that in.
+    public void SpawnGrid()
+    {
+        Instantiate(levelsPrefab[Random.Range(0, levelsPrefab.Length)], Vector3.zero, levelsPrefab[Random.Range(0, levelsPrefab.Length)].transform.rotation);
+    }
+    //Overload method of the spawn grid that makes a specific grid with index spawn into the scene.
+    private void SpawnGrid(int chosenGrid)
+    {
+        Instantiate(levelsPrefab[chosenGrid], Vector3.zero, levelsPrefab[Random.Range(0, levelsPrefab.Length)].transform.rotation);
     }
 
     /// <summary>
