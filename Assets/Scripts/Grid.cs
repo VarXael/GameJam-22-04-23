@@ -21,6 +21,7 @@ public class Grid : MonoBehaviour
     public Level[] levelsPrefab;
     public float tileSize = 1f;
 
+    private List<Tile> tiles = new List<Tile>();
 
     void Start()
     {
@@ -45,6 +46,35 @@ public class Grid : MonoBehaviour
     {
         // just call the static one with the customisable tile size, except this tile size
         return GetSnappedPosition(position, tileSize);
+    }
+
+    /// <summary>
+    /// Registers a tile with this grid for fast lookup (and can respond to player step on events etc)
+    /// </summary>
+    public void RegisterTile(Tile tile)
+    {
+        tiles.Add(tile);
+    }
+
+    public void UnregisterTile(Tile tile)
+    {
+        tiles.Remove(tile);
+    }
+
+    /// <summary>
+    /// Called when the player steps to a tile. Sends notification to relevant tiles that the player has stepped on them
+    /// </summary>
+    public void OnPlayerSteppedTo(Vector3 targetPosition)
+    {
+        float distanceCheckRange = tileSize * 0.5f;
+        foreach (Tile tile in tiles)
+        {
+            // hack: basic distance check, it'll be fine.
+            if (Vector3.Distance(targetPosition, tile.transform.position) < distanceCheckRange && tile.TryGetComponent(out PlayerResponder playerResponder))
+            {
+                playerResponder.onSteppedOnByPlayer?.Invoke();
+            }
+        }
     }
 
     /// <summary>

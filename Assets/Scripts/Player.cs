@@ -57,6 +57,9 @@ public class Player : MonoBehaviour
                 moveTargetPosition = Grid.singleton.GetSnappedPosition(moveTargetPosition);
                 transform.rotation = Quaternion.LookRotation(moveTargetPosition - moveSourcePosition);
 
+                moveProgess = 0f;
+                isMoving = true;
+
                 if (movingChangesTime)
                 {
                     // advance/reverse time
@@ -73,8 +76,7 @@ public class Player : MonoBehaviour
                     movementResponder.onPlayerMoved?.Invoke(1);
                 }
 
-                moveProgess = 0f;
-                isMoving = true;
+                Grid.singleton.OnPlayerSteppedTo(moveTargetPosition);
             }
         }
         else

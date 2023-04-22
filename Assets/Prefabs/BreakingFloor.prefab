@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 4101897239479437375}
   - component: {fileID: 8611402291236449207}
   - component: {fileID: 8611402291236449206}
+  - component: {fileID: 7736243924251577675}
+  - component: {fileID: 3451933334697817424}
   m_Layer: 0
   m_Name: BreakingFloor
   m_TagString: Untagged
@@ -114,3 +116,36 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   breakTime: 3
+--- !u!114 &7736243924251577675
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2588480987083860458}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8efc5cc37da96f45b9e7f7773f845b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onPlayerMoved:
+    m_PersistentCalls:
+      m_Calls: []
+  onPlayerDied:
+    m_PersistentCalls:
+      m_Calls: []
+  onSteppedOnByPlayer:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &3451933334697817424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2588480987083860458}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a73e183310432140976169bafec2e38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

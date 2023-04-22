@@ -1,11 +1,25 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
-    public void OnSteppedOnByPlayer()
+    private void OnEnable()
     {
-        // todo: murder player if they stepped on a bad tile, etc
+        Grid grid = Grid.singleton;
+        if (grid)
+        {
+            grid.RegisterTile(this);
+        }
+    }
+
+    private void OnDisable()
+    {
+        Grid grid = Grid.singleton;
+        if (grid)
+        {
+            grid.UnregisterTile(this);
+        }
     }
 }

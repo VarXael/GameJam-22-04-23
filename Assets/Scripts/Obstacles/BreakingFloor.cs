@@ -5,6 +5,7 @@ using UnityEngine;
 public class BreakingFloor : MonoBehaviour
 {
     private TimeResponder timeResponder;
+    private PlayerResponder playerResponder;
 
     [Tooltip("What time the floor breaks")]
     public int breakTime;
@@ -14,7 +15,9 @@ public class BreakingFloor : MonoBehaviour
     private void Awake()
     {
         timeResponder = GetComponent<TimeResponder>();
+        playerResponder = GetComponent<PlayerResponder>();
         timeResponder.onTimeChanged.AddListener(OnTimeChanged);
+        playerResponder.onSteppedOnByPlayer.AddListener(OnSteppedOnByPlayer);
 
         UpdateBrokenness(TimeManager.singleton.currentTime);
     }
@@ -30,5 +33,14 @@ public class BreakingFloor : MonoBehaviour
 
         // just disappear for now, we can do more later
         GetComponentInChildren<Renderer>().enabled = !isBroken;
+    }
+
+    private void OnSteppedOnByPlayer()
+    {
+        if (isBroken)
+        {
+            // kill the player
+            Player.singleton.Die("stepped on broken tile");
+        }
     }
 }
