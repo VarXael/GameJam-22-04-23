@@ -24,6 +24,7 @@ public class PreviewLevel : MonoBehaviour
             {
                 DestroyImmediate(child.gameObject);
             }
+            currentLevelIndex = -1;
         }
     }
 
