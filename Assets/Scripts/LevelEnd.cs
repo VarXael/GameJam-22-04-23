@@ -14,6 +14,7 @@ public class LevelEnd : MonoBehaviour
 
     private void OnSteppedOnByPlayer()
     {
-        GameManager.singleton.FinishLevel();
+        if (!Player.singleton.isDead)
+            GameManager.singleton.FinishLevel();
     }
 }

@@ -45,13 +45,13 @@ public class PreviewLevel : MonoBehaviour
 
     private void SpawnLevelFromIndex(int levelIndex)
     {
-        if (levelIndex > GridManager.singleton.levelsPrefab.Length - 1)
+        if (levelIndex > LevelManager.singleton.levelsPrefab.Length - 1)
         {
             throw new ("No Level Found!");
         }
         if (levelIndex == currentLevelIndex) return;
         DestroyImmediate(currentLevelInstance);
-        currentLevelInstance = PrefabUtility.InstantiatePrefab(GridManager.singleton.levelsPrefab[levelIndex].gameObject) as GameObject;
+        currentLevelInstance = PrefabUtility.InstantiatePrefab(LevelManager.singleton.levelsPrefab[levelIndex].gameObject) as GameObject;
         currentLevelInstance.transform.parent = transform;
         currentLevelIndex = levelIndex;
     }

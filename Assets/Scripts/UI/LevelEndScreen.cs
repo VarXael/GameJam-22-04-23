@@ -25,6 +25,6 @@ public class LevelEndScreen : MonoBehaviour
     {
         mainPanel.SetActive(false);
 
-        GameManager.singleton.RequestNextLevel();
+        LevelManager.singleton.GoToNextLevel();
     }
 }

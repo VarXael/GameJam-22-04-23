@@ -5,10 +5,26 @@ using UnityEngine;
 public class PlayerSpawner : MonoBehaviour
 {
     public GameObject playerGO;
+    private GameObject spawnedPlayer;
+
+    private Renderer renderer;
+
     // Start is called before the first frame update
     void Start()
     {
-        SpawnPlayer(transform.position);
+        renderer = GetComponent<Renderer>();
+        if (renderer)
+            renderer.enabled = false;
+
+        spawnedPlayer = SpawnPlayer(transform.position);
+    }
+
+    private void OnDestroy()
+    {
+        if (spawnedPlayer)
+        {
+            Destroy(spawnedPlayer.gameObject);
+        }
     }
 
     //Spawns Player at default position, given by the grid
@@ -19,9 +35,8 @@ public class PlayerSpawner : MonoBehaviour
     //}
 
     //Spawns Player in the Level at a specified position passed by reference
-    public void SpawnPlayer(Vector3 specifiedSpawnPosition)
+    public GameObject SpawnPlayer(Vector3 specifiedSpawnPosition)
     {
-        Instantiate(playerGO, specifiedSpawnPosition, playerGO.transform.rotation);
-        Destroy(gameObject);
+        return Instantiate(playerGO, specifiedSpawnPosition, playerGO.transform.rotation);
     }
 }

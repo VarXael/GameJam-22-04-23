@@ -24,6 +24,8 @@ public class Player : MonoBehaviour
     public bool movingChangesTime = true;
     public Vector3 positionOfZeroTime = Vector3.zero;
 
+    public bool isDead { get; private set; }
+
     private bool isMoving;
     private float moveProgess = 1f;
     private Vector3 moveTargetPosition;
@@ -43,40 +45,60 @@ public class Player : MonoBehaviour
             // decide whether to move
             if (movementIntent.x != 0 || movementIntent.z != 0) // if user is pressing diagonally don't move them at all I guess
             {
+                // hack cus FindObjectsOfType is bad: enact player movement responders now
+                PlayerResponder[] playerResponders = FindObjectsOfType<PlayerResponder>();
+
                 // hmm I guess since this is a tile-based game we only want to move one axis at a time (new to me)
                 if (movementIntent.x != 0)
                 {
-                    moveTargetPosition = new Vector3(transform.position.x + GridManager.singleton.tileSize * Mathf.Sign(movementIntent.x), transform.position.y, transform.position.z);
+                    moveTargetPosition = new Vector3(transform.position.x + LevelManager.singleton.tileSize * Mathf.Sign(movementIntent.x), transform.position.y, transform.position.z);
                 }
                 else if (movementIntent.z != 0)
                 {
-                    moveTargetPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z + GridManager.singleton.tileSize * Mathf.Sign(movementIntent.z));
+                    moveTargetPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z + LevelManager.singleton.tileSize * Mathf.Sign(movementIntent.z));
                 }
 
-                moveSourcePosition = transform.position;
-                moveTargetPosition = GridManager.singleton.GetSnappedPosition(moveTargetPosition);
-                transform.rotation = Quaternion.LookRotation(moveTargetPosition - moveSourcePosition);
-
-                moveProgess = 0f;
-                isMoving = true;
-
-                if (movingChangesTime)
+                // Check with player responders that we can move in this direction
+                bool hasBeenBlocked = false;
+                foreach (var playerResponder in playerResponders)
                 {
-                    // advance/reverse time
-                    int targetTime = Mathf.RoundToInt(moveTargetPosition.x - positionOfZeroTime.x);
-                    if (targetTime != TimeManager.singleton.currentTime)
+                    if (playerResponder.blocksPlayer && playerResponder.DoesOccupyPosition(moveTargetPosition))
                     {
-                        TimeManager.singleton.StepTimeBy(targetTime - TimeManager.singleton.currentTime);
+                        hasBeenBlocked = true;
                     }
                 }
 
-                // hack cus FindObjectsOfType is bad: enact player movement responders now
-                foreach (var movementResponder in FindObjectsOfType<PlayerResponder>())
-                {
-                    movementResponder.onPlayerMoved?.Invoke(1);
-                }
+                // turn towards the tile even if we were blocked
+                transform.rotation = Quaternion.LookRotation(moveTargetPosition - transform.position);
 
-                GridManager.singleton.OnPlayerSteppedTo(moveTargetPosition);
+                if (!hasBeenBlocked)
+                {
+                    moveSourcePosition = transform.position;
+                    moveTargetPosition = LevelManager.singleton.GetSnappedPosition(moveTargetPosition);
+
+                    moveProgess = 0f;
+                    isMoving = true;
+
+                    if (movingChangesTime)
+                    {
+                        // advance/reverse time
+                        int targetTime = Mathf.RoundToInt(moveTargetPosition.x - positionOfZeroTime.x);
+                        if (targetTime != TimeManager.singleton.currentTime)
+                        {
+                            TimeManager.singleton.StepTimeBy(targetTime - TimeManager.singleton.currentTime);
+                        }
+                    }
+
+                    // tell player responders we've moved
+                    foreach (var movementResponder in playerResponders)
+                        movementResponder.onPlayerMoved?.Invoke(1);
+
+                    LevelManager.singleton.OnPlayerSteppedTo(moveTargetPosition);
+                }
+                else
+                {
+                    Debug.Log("can't move here due to blocking object");
+                }
             }
         }
         else
@@ -88,7 +110,7 @@ public class Player : MonoBehaviour
 
             if (moveProgess >= 1f)
             {
-                transform.position = GridManager.singleton.GetSnappedPosition(transform.position);
+                transform.position = LevelManager.singleton.GetSnappedPosition(transform.position);
                 isMoving = false;
             }
         }
@@ -96,9 +118,13 @@ public class Player : MonoBehaviour
 
     public void Die(string reason = "old age")
     {
+        isDead = true;
         foreach (var playerResponder in FindObjectsOfType<PlayerResponder>())
         {
             playerResponder.onPlayerDied?.Invoke(reason);
         }
+
+        // todo massive explosion VFX?
+        gameObject.SetActive(false);
     }
 }

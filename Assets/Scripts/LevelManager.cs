@@ -2,40 +2,63 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GridManager : MonoBehaviour
+public class LevelManager : MonoBehaviour
 {
-    public static GridManager singleton
+    public static LevelManager singleton
     {
         get
         {
             if (_singleton == null)
-                _singleton = FindObjectOfType<GridManager>();
+                _singleton = FindObjectOfType<LevelManager>();
             return _singleton;
         }
     }
-    private static GridManager _singleton;
+    private static LevelManager _singleton;
 
     public GameObject gridTileGO;
     public GameObject playerGO;
     public Level[] levelsPrefab;
     public float tileSize = 1f;
 
+    [Tooltip("The level to start on")]
+    public int startLevelIndex = 0;
+
+    private Level spawnedLevel;
+    private int spawnedLevelIndex = 0;
+
     private List<PlayerResponder> playerResponders = new List<PlayerResponder>();
 
     void Start()
     {
-        SpawnGrid();
+        SpawnLevel(startLevelIndex);
     }
 
     //Spawns grid, by default it takes a random grid in the levelsPrefab array and spawns that in.
-    public void SpawnGrid()
-    {
-        Instantiate(levelsPrefab[Random.Range(0, levelsPrefab.Length)], Vector3.zero, levelsPrefab[Random.Range(0, levelsPrefab.Length)].transform.rotation);
-    }
+    public void SpawnRandomLevel() => SpawnLevel(Random.Range(0, levelsPrefab.Length));
     //Overload method of the spawn grid that makes a specific grid with index spawn into the scene.
-    private void SpawnGrid(int chosenGrid)
+    private void SpawnLevel(int chosenGrid)
     {
-        Instantiate(levelsPrefab[chosenGrid], Vector3.zero, levelsPrefab[Random.Range(0, levelsPrefab.Length)].transform.rotation);
+        if (spawnedLevel != null)
+        {
+            Destroy(spawnedLevel.gameObject);
+            spawnedLevel = null;
+        }
+
+        spawnedLevel = Instantiate(levelsPrefab[chosenGrid], Vector3.zero, levelsPrefab[Random.Range(0, levelsPrefab.Length)].transform.rotation);
+        spawnedLevelIndex = chosenGrid;
+    }
+
+    /// <summary>
+    /// Restarts the current level by destroying/respawning it
+    /// </summary>
+    public void RestartLevel() => SpawnLevel(spawnedLevelIndex);
+
+    public void GoToNextLevel()
+    {
+        if (spawnedLevelIndex + 1 < levelsPrefab.Length)
+            SpawnLevel(spawnedLevelIndex + 1);
+        else
+            Debug.LogError("No more levels to play, end of game is here!");
     }
 
     /// <summary>
@@ -65,11 +88,10 @@ public class GridManager : MonoBehaviour
     /// </summary>
     public void OnPlayerSteppedTo(Vector3 targetPosition)
     {
-        float distanceCheckRange = tileSize * 0.5f;
         foreach (PlayerResponder playerResponder in playerResponders)
         {
             // hack: basic distance check, it'll be fine.
-            if (Vector3.Distance(targetPosition, playerResponder.transform.position) < distanceCheckRange)
+            if (playerResponder.DoesOccupyPosition(targetPosition))
             {
                 playerResponder.onSteppedOnByPlayer?.Invoke();
             }
