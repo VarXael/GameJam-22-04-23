@@ -7,7 +7,7 @@ public class Tile : MonoBehaviour
 {
     private void OnEnable()
     {
-        Grid grid = Grid.singleton;
+        GridManager grid = GridManager.singleton;
         if (grid)
         {
             grid.RegisterTile(this);
@@ -16,7 +16,7 @@ public class Tile : MonoBehaviour
 
     private void OnDisable()
     {
-        Grid grid = Grid.singleton;
+        GridManager grid = GridManager.singleton;
         if (grid)
         {
             grid.UnregisterTile(this);

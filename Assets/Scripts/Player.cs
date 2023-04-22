@@ -76,7 +76,7 @@ public class Player : MonoBehaviour
                     movementResponder.onPlayerMoved?.Invoke(1);
                 }
 
-                Grid.singleton.OnPlayerSteppedTo(moveTargetPosition);
+                GridManager.singleton.OnPlayerSteppedTo(moveTargetPosition);
             }
         }
         else
