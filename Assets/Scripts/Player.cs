@@ -9,6 +9,10 @@ public class Player : MonoBehaviour
     [Tooltip("Animation of movement between tiles")]
     public AnimationCurve movementCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
 
+    // Timey wimey stuff
+    public bool movingChangesTime = true;
+    public Vector3 positionOfZeroTime = Vector3.zero;
+
     private bool isMoving;
     private float moveProgess = 1f;
     private Vector3 moveTargetPosition;
@@ -39,6 +43,17 @@ public class Player : MonoBehaviour
                 moveSourcePosition = transform.position;
                 moveTargetPosition = Grid.singleton.GetSnappedPosition(moveTargetPosition);
                 transform.rotation = Quaternion.LookRotation(moveTargetPosition - moveSourcePosition);
+
+                if (movingChangesTime)
+                {
+                    // advance/reverse time
+                    int targetTime = Mathf.RoundToInt(moveTargetPosition.x - positionOfZeroTime.x);
+                    if (targetTime != TimeManager.singleton.currentTime)
+                    {
+                        Debug.Log($"Player advancing time by {targetTime - TimeManager.singleton.currentTime}");
+                        TimeManager.singleton.StepTimeBy(targetTime - TimeManager.singleton.currentTime);
+                    }
+                }
 
                 moveProgess = 0f;
                 isMoving = true;
