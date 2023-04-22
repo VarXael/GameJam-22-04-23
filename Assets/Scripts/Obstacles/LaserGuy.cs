@@ -20,8 +20,10 @@ public class LaserGuy : MonoBehaviour
     [Tooltip("Can be used to stagger multiple laser guys")]
     public int numTicksInitialDelay = 0;
 
+    public float laserHitboxThickness = 0.2f;
+
     private TimeResponder timeResponder;
-    private PlayerMovementResponder playerMovementResponder;
+    private PlayerResponder playerMovementResponder;
     private LineRenderer laserRenderer;
 
     private int totalTimeRunning;
@@ -29,14 +31,14 @@ public class LaserGuy : MonoBehaviour
     private void Awake()
     {
         timeResponder = GetComponent<TimeResponder>();
-        playerMovementResponder = GetComponent<PlayerMovementResponder>();
+        playerMovementResponder = GetComponent<PlayerResponder>();
         laserRenderer = GetComponent<LineRenderer>();
 
         timeResponder.onTimeChanged.AddListener(OnTimeChanged);
         playerMovementResponder.onPlayerMoved.AddListener(OnPlayerMoved);
 
         totalTimeRunning = -numTicksInitialDelay;
-        RefreshLaserVisibility();
+        RefreshLaser();
     }
 
     private void OnTimeChanged(int newTime, int offset)
@@ -45,7 +47,7 @@ public class LaserGuy : MonoBehaviour
         {
             // this guy works independently of the player's time, so we'll just advance _forward_ by the number of steps the player has taken (usually 1 at a time but let's cover all cases)
             totalTimeRunning += Mathf.Abs(offset);
-            RefreshLaserVisibility();
+            RefreshLaser();
         }
     }
 
@@ -54,11 +56,11 @@ public class LaserGuy : MonoBehaviour
         if (advancementType == AdvancementType.PlayerMovement)
         {
             totalTimeRunning += numSteps;
-            RefreshLaserVisibility();
+            RefreshLaser();
         }
     }
 
-    private void RefreshLaserVisibility()
+    private void RefreshLaser()
     {
         if (totalTimeRunning >= 0)
         {
@@ -69,5 +71,21 @@ public class LaserGuy : MonoBehaviour
         }
         else
             laserRenderer.enabled = false;
+
+        if (laserRenderer.enabled)
+        {
+            // kill the player if it's within reasonable range of the laser
+            Vector3 laserDirection = transform.forward;
+            Player player = Player.singleton;
+            if (player)
+            {
+                Vector3 perpendicularToLaser = Vector3.Cross(laserDirection, Vector3.up).normalized;
+
+                if (Vector3.Dot(player.effectivePosition - transform.position, perpendicularToLaser) <= laserHitboxThickness)
+                {
+                    player.Die();
+                }
+            }
+        }
     }
 }
