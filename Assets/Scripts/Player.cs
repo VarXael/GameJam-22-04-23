@@ -6,23 +6,25 @@ public class Player : MonoBehaviour
 {
     [Tooltip("Duration of a single move in seconds")]
     public float moveDuration = 0.5f;
-
+    [Tooltip("Animation of movement between tiles")]
+    public AnimationCurve movementCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
 
     private bool isMoving;
     private float moveProgess = 1f;
     private Vector3 moveTargetPosition;
+    private Vector3 moveSourcePosition;
 
     void Update()
     {
         if (!isMoving)
         {
             // todo maybe don't do this every frame?
-            transform.position = Grid.singleton.GetSnappedPosition(transform.position);
 
             // todo: might adjust based on camera if necessary
-            Vector3 movementIntent = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
+            Vector3 movementIntent = new Vector3(Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical"));
 
-            if (movementIntent.magnitude > 0f)
+            // decide whether to move
+            if (movementIntent.x != 0 || movementIntent.z != 0) // if user is pressing diagonally don't move them at all I guess
             {
                 // hmm I guess since this is a tile-based game we only want to move one axis at a time (new to me)
                 if (movementIntent.x != 0)
@@ -34,12 +36,26 @@ public class Player : MonoBehaviour
                     moveTargetPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z + Grid.singleton.tileSize * Mathf.Sign(movementIntent.z));
                 }
 
+                moveSourcePosition = transform.position;
+                moveTargetPosition = Grid.singleton.GetSnappedPosition(moveTargetPosition);
+                transform.rotation = Quaternion.LookRotation(moveTargetPosition - moveSourcePosition);
+
                 moveProgess = 0f;
                 isMoving = true;
             }
         }
         else
         {
+            // blend towards target position
+            moveProgess += moveDuration > 0f ? Time.deltaTime / moveDuration : 1f - moveProgess;
+
+            transform.position = Vector3.Lerp(moveSourcePosition, moveTargetPosition, movementCurve.Evaluate(moveProgess));
+
+            if (moveProgess >= 1f)
+            {
+                transform.position = Grid.singleton.GetSnappedPosition(transform.position);
+                isMoving = false;
+            }
         }
     }
 }
