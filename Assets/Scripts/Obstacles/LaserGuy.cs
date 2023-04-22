@@ -81,7 +81,7 @@ public class LaserGuy : MonoBehaviour
             {
                 Vector3 perpendicularToLaser = Vector3.Cross(laserDirection, Vector3.up).normalized;
 
-                if (Vector3.Dot(player.effectivePosition - transform.position, perpendicularToLaser) <= laserHitboxThickness)
+                if (Mathf.Abs(Vector3.Dot(player.effectivePosition - transform.position, perpendicularToLaser)) <= laserHitboxThickness)
                 {
                     player.Die();
                 }
