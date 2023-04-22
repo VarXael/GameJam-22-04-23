@@ -19,7 +19,6 @@ public class Grid : MonoBehaviour
     public GameObject gridTileGO;
     public GameObject playerGO;
     public Level[] levelsPrefab;
-    public Vector2 gridSize;
     public float tileSize = 1f;
 
 

@@ -34,7 +34,7 @@ Transform:
   m_Children:
   - {fileID: 6733844475382061212}
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1858824335487769529
 MonoBehaviour:
@@ -257,7 +257,9 @@ PrefabInstance:
       value: Enemy_Flying_Gun
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 3515717276090252278, guid: f89c66f52ebbd5943b765d1655c13d22, type: 3}
+    - {fileID: 7869873546869171050, guid: f89c66f52ebbd5943b765d1655c13d22, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f89c66f52ebbd5943b765d1655c13d22, type: 3}
