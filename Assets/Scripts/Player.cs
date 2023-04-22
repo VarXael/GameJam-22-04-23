@@ -54,6 +54,12 @@ public class Player : MonoBehaviour
                     }
                 }
 
+                // hack cus FindObjectsOfType is bad: enact player movement responders now
+                foreach (var movementResponder in FindObjectsOfType<PlayerMovementResponder>())
+                {
+                    movementResponder.onPlayerMoved?.Invoke(1);
+                }
+
                 moveProgess = 0f;
                 isMoving = true;
             }
