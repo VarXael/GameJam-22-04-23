@@ -9,9 +9,24 @@ public class PlayerResponder : MonoBehaviour
 
     public UnityEvent<string> onPlayerDied;
 
-    /// <summary>
-    /// Only gets called if you have a Tile component
-    /// </summary>
 
     public UnityEvent onSteppedOnByPlayer;
+
+    private void OnEnable()
+    {
+        GridManager grid = GridManager.singleton;
+        if (grid)
+        {
+            grid.RegisterTile(this);
+        }
+    }
+
+    private void OnDisable()
+    {
+        GridManager grid = GridManager.singleton;
+        if (grid)
+        {
+            grid.UnregisterTile(this);
+        }
+    }
 }

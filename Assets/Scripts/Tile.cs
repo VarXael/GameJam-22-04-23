@@ -5,21 +5,6 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
-    private void OnEnable()
-    {
-        GridManager grid = GridManager.singleton;
-        if (grid)
-        {
-            grid.RegisterTile(this);
-        }
-    }
-
-    private void OnDisable()
-    {
-        GridManager grid = GridManager.singleton;
-        if (grid)
-        {
-            grid.UnregisterTile(this);
-        }
-    }
+    // feeling cute rn, might delete later, idk
+    // (this bit got refactored out)
 }

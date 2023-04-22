@@ -20,7 +20,7 @@ public class GridManager : MonoBehaviour
     public Level[] levelsPrefab;
     public float tileSize = 1f;
 
-    private List<Tile> tiles = new List<Tile>();
+    private List<PlayerResponder> playerResponders = new List<PlayerResponder>();
 
     void Start()
     {
@@ -50,14 +50,14 @@ public class GridManager : MonoBehaviour
     /// <summary>
     /// Registers a tile with this grid for fast lookup (and can respond to player step on events etc)
     /// </summary>
-    public void RegisterTile(Tile tile)
+    public void RegisterTile(PlayerResponder tile)
     {
-        tiles.Add(tile);
+        playerResponders.Add(tile);
     }
 
-    public void UnregisterTile(Tile tile)
+    public void UnregisterTile(PlayerResponder tile)
     {
-        tiles.Remove(tile);
+        playerResponders.Remove(tile);
     }
 
     /// <summary>
@@ -66,10 +66,10 @@ public class GridManager : MonoBehaviour
     public void OnPlayerSteppedTo(Vector3 targetPosition)
     {
         float distanceCheckRange = tileSize * 0.5f;
-        foreach (Tile tile in tiles)
+        foreach (PlayerResponder playerResponder in playerResponders)
         {
             // hack: basic distance check, it'll be fine.
-            if (Vector3.Distance(targetPosition, tile.transform.position) < distanceCheckRange && tile.TryGetComponent(out PlayerResponder playerResponder))
+            if (Vector3.Distance(targetPosition, playerResponder.transform.position) < distanceCheckRange)
             {
                 playerResponder.onSteppedOnByPlayer?.Invoke();
             }

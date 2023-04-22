@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class GameManager : MonoBehaviour
 {
@@ -20,14 +21,27 @@ public class GameManager : MonoBehaviour
 
     private PlayerResponder playerResponder;
 
+    public UnityEvent onPlayerFinishedLevel;
+
     private void Awake()
     {
         playerResponder = GetComponent<PlayerResponder>();
         playerResponder.onPlayerDied.AddListener(OnPlayerDied);
     }
 
+    public void FinishLevel()
+    {
+        onPlayerFinishedLevel?.Invoke();
+    }
+
     private void OnPlayerDied(string reason)
     {
         // Im not sure what Im doing
+    }
+
+    public void RequestNextLevel()
+    {
+        // ???? profit
+        // todo: next level here
     }
 }
