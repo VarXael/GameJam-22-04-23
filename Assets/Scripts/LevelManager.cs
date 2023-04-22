@@ -53,6 +53,14 @@ public class LevelManager : MonoBehaviour
     /// </summary>
     public void RestartLevel() => SpawnLevel(spawnedLevelIndex);
 
+    public void GoToNextLevel()
+    {
+        if (spawnedLevelIndex + 1 < levelsPrefab.Length)
+            SpawnLevel(spawnedLevelIndex + 1);
+        else
+            Debug.LogError("No more levels to play, end of game is here!");
+    }
+
     /// <summary>
     /// Snaps position to the grid
     /// </summary>

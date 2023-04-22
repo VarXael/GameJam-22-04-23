@@ -24,6 +24,8 @@ public class Player : MonoBehaviour
     public bool movingChangesTime = true;
     public Vector3 positionOfZeroTime = Vector3.zero;
 
+    public bool isDead { get; private set; }
+
     private bool isMoving;
     private float moveProgess = 1f;
     private Vector3 moveTargetPosition;
@@ -94,6 +96,7 @@ public class Player : MonoBehaviour
 
     public void Die(string reason = "old age")
     {
+        isDead = true;
         foreach (var playerResponder in FindObjectsOfType<PlayerResponder>())
         {
             playerResponder.onPlayerDied?.Invoke(reason);

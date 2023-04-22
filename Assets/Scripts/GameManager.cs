@@ -38,10 +38,4 @@ public class GameManager : MonoBehaviour
     {
         // Im not sure what Im doing
     }
-
-    public void RequestNextLevel()
-    {
-        // ???? profit
-        // todo: next level here
-    }
 }
