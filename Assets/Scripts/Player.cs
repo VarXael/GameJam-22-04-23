@@ -4,6 +4,17 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    public static Player singleton
+    {
+        get
+        {
+            if (_singleton == null)
+                _singleton = FindObjectOfType<Player>();
+            return _singleton;
+        }
+    }
+    private static Player _singleton;
+
     [Tooltip("Duration of a single move in seconds")]
     public float moveDuration = 0.5f;
     [Tooltip("Animation of movement between tiles")]
@@ -17,6 +28,8 @@ public class Player : MonoBehaviour
     private float moveProgess = 1f;
     private Vector3 moveTargetPosition;
     private Vector3 moveSourcePosition;
+
+    public Vector3 effectivePosition => isMoving ? moveTargetPosition : transform.position;
 
     void Update()
     {
@@ -54,6 +67,12 @@ public class Player : MonoBehaviour
                     }
                 }
 
+                // hack cus FindObjectsOfType is bad: enact player movement responders now
+                foreach (var movementResponder in FindObjectsOfType<PlayerResponder>())
+                {
+                    movementResponder.onPlayerMoved?.Invoke(1);
+                }
+
                 moveProgess = 0f;
                 isMoving = true;
             }
@@ -70,6 +89,14 @@ public class Player : MonoBehaviour
                 transform.position = Grid.singleton.GetSnappedPosition(transform.position);
                 isMoving = false;
             }
+        }
+    }
+
+    public void Die(string reason = "old age")
+    {
+        foreach (var playerResponder in FindObjectsOfType<PlayerResponder>())
+        {
+            playerResponder.onPlayerDied?.Invoke(reason);
         }
     }
 }
