@@ -45,6 +45,9 @@ public class Player : MonoBehaviour
             // decide whether to move
             if (movementIntent.x != 0 || movementIntent.z != 0) // if user is pressing diagonally don't move them at all I guess
             {
+                // hack cus FindObjectsOfType is bad: enact player movement responders now
+                PlayerResponder[] playerResponders = FindObjectsOfType<PlayerResponder>();
+
                 // hmm I guess since this is a tile-based game we only want to move one axis at a time (new to me)
                 if (movementIntent.x != 0)
                 {
@@ -55,28 +58,47 @@ public class Player : MonoBehaviour
                     moveTargetPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z + LevelManager.singleton.tileSize * Mathf.Sign(movementIntent.z));
                 }
 
-                moveSourcePosition = transform.position;
-                moveTargetPosition = LevelManager.singleton.GetSnappedPosition(moveTargetPosition);
-                transform.rotation = Quaternion.LookRotation(moveTargetPosition - moveSourcePosition);
-
-                moveProgess = 0f;
-                isMoving = true;
-
-                if (movingChangesTime)
+                // Check with player responders that we can move in this direction
+                bool hasBeenBlocked = false;
+                foreach (var playerResponder in playerResponders)
                 {
-                    // advance/reverse time
-                    int targetTime = Mathf.RoundToInt(moveTargetPosition.x - positionOfZeroTime.x);
-                    if (targetTime != TimeManager.singleton.currentTime)
+                    if (playerResponder.blocksPlayer && playerResponder.DoesOccupyPosition(moveTargetPosition))
                     {
-                        TimeManager.singleton.StepTimeBy(targetTime - TimeManager.singleton.currentTime);
+                        hasBeenBlocked = true;
                     }
                 }
 
-                // hack cus FindObjectsOfType is bad: enact player movement responders now
-                foreach (var movementResponder in FindObjectsOfType<PlayerResponder>())
-                    movementResponder.onPlayerMoved?.Invoke(1);
+                // turn towards the tile even if we were blocked
+                transform.rotation = Quaternion.LookRotation(moveTargetPosition - transform.position);
 
-                LevelManager.singleton.OnPlayerSteppedTo(moveTargetPosition);
+                if (!hasBeenBlocked)
+                {
+                    moveSourcePosition = transform.position;
+                    moveTargetPosition = LevelManager.singleton.GetSnappedPosition(moveTargetPosition);
+
+                    moveProgess = 0f;
+                    isMoving = true;
+
+                    if (movingChangesTime)
+                    {
+                        // advance/reverse time
+                        int targetTime = Mathf.RoundToInt(moveTargetPosition.x - positionOfZeroTime.x);
+                        if (targetTime != TimeManager.singleton.currentTime)
+                        {
+                            TimeManager.singleton.StepTimeBy(targetTime - TimeManager.singleton.currentTime);
+                        }
+                    }
+
+                    // tell player responders we've moved
+                    foreach (var movementResponder in playerResponders)
+                        movementResponder.onPlayerMoved?.Invoke(1);
+
+                    LevelManager.singleton.OnPlayerSteppedTo(moveTargetPosition);
+                }
+                else
+                {
+                    Debug.Log("can't move here due to blocking object");
+                }
             }
         }
         else

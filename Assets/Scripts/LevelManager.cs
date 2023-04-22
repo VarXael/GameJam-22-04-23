@@ -88,11 +88,10 @@ public class LevelManager : MonoBehaviour
     /// </summary>
     public void OnPlayerSteppedTo(Vector3 targetPosition)
     {
-        float distanceCheckRange = tileSize * 0.5f;
         foreach (PlayerResponder playerResponder in playerResponders)
         {
             // hack: basic distance check, it'll be fine.
-            if (Vector3.Distance(targetPosition, playerResponder.transform.position) < distanceCheckRange)
+            if (playerResponder.DoesOccupyPosition(targetPosition))
             {
                 playerResponder.onSteppedOnByPlayer?.Invoke();
             }
