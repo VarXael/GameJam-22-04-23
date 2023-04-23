@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class LaserGuy : MonoBehaviour
 {
@@ -27,6 +28,10 @@ public class LaserGuy : MonoBehaviour
     private LineRenderer laserRenderer;
 
     private int totalTimeRunning;
+
+    public bool isShooting { get; private set; }
+
+    public UnityEvent<int, int> onTick;
 
     private void Awake()
     {
@@ -64,15 +69,19 @@ public class LaserGuy : MonoBehaviour
     {
         if (totalTimeRunning >= 0)
         {
-            if ((totalTimeRunning % (numTicksActive + numTicksInactive)) < numTicksActive)
-                laserRenderer.enabled = true;
+            int t = (totalTimeRunning % (numTicksActive + numTicksInactive));
+            if (t < numTicksActive)
+                isShooting = true;
             else
-                laserRenderer.enabled = false;
+                isShooting = false;
+
+            int timeTilShoot = Mathf.Max(t, 0);
+            onTick?.Invoke(timeTilShoot, numTicksInactive);
         }
         else
-            laserRenderer.enabled = false;
+            isShooting = false;
 
-        if (laserRenderer.enabled)
+        if (isShooting)
         {
             // kill the player if it's within reasonable range of the laser
             Vector3 laserDirection = transform.forward;
@@ -87,5 +96,7 @@ public class LaserGuy : MonoBehaviour
                 }
             }
         }
+
+        laserRenderer.enabled = isShooting;
     }
 }
