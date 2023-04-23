@@ -16,15 +16,11 @@ public class PreviewLevel : MonoBehaviour
     {
         if (Application.isPlaying)
         {
-            Destroy(gameObject);
+            gameObject.SetActive(false);
         }
         else
         {
-            foreach (Transform child in transform)
-            {
-                DestroyImmediate(child.gameObject);
-            }
-            currentLevelIndex = -1;
+            gameObject.SetActive(true);
         }
     }
 
@@ -32,12 +28,31 @@ public class PreviewLevel : MonoBehaviour
     {
         if (previewMode == false)
         {
+            if(currentLevelInstance == null)
+            {
+                foreach (Transform child in transform)
+                {
+                    DestroyImmediate(child.gameObject);
+                }
+            }
+            else
+            {
+                currentLevelInstance.SetActive(false);
+            }
+        }
+        else if(previewMode == true && currentLevelInstance == null)
+        {
             foreach (Transform child in transform)
             {
                 DestroyImmediate(child.gameObject);
             }
+            SpawnLevelFromIndex(levelIndex);
         }
-        else if(previewMode == true)
+        else if(previewMode == true && currentLevelInstance != null)
+        {
+            currentLevelInstance.SetActive(true);
+        }
+        if (levelIndex != currentLevelIndex)
         {
             SpawnLevelFromIndex(levelIndex);
         }
