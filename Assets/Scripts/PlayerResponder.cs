@@ -38,6 +38,6 @@ public class PlayerResponder : MonoBehaviour
 
     public bool DoesOccupyPosition(Vector3 position)
     {
-        return Vector2.Distance(position, transform.position) < playerDistanceCheckRange;
+        return Vector3.Distance(position, transform.position) < playerDistanceCheckRange;
     }
 }

@@ -12,9 +12,11 @@ public class PlayerSpawner : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        renderer = GetComponent<Renderer>();
-        if (renderer)
-            renderer.enabled = false;
+        foreach (var renderer in GetComponentsInChildren<Renderer>())
+        {
+            if (renderer)
+                renderer.enabled = false;
+        }
 
         spawnedPlayer = SpawnPlayer(transform.position);
     }

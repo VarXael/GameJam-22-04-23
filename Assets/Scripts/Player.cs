@@ -15,27 +15,24 @@ public class Player : MonoBehaviour
     }
     private static Player _singleton;
 
-    [Tooltip("Duration of a single move in seconds")]
-    public float moveDuration = 0.5f;
-    [Tooltip("Animation of movement between tiles")]
-    public AnimationCurve movementCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
-
     // Timey wimey stuff
     public bool movingChangesTime = true;
     public Vector3 positionOfZeroTime = Vector3.zero;
 
     public bool isDead { get; private set; }
 
-    private bool isMoving;
-    private float moveProgess = 1f;
-    private Vector3 moveTargetPosition;
-    private Vector3 moveSourcePosition;
+    public Vector3 effectivePosition => movable.effectivePosition;
 
-    public Vector3 effectivePosition => isMoving ? moveTargetPosition : transform.position;
+    private Movable movable;
+
+    private void Awake()
+    {
+        movable = GetComponent<Movable>();
+    }
 
     void Update()
     {
-        if (!isMoving)
+        if (!movable.isMoving)
         {
             // todo maybe don't do this every frame?
 
@@ -47,42 +44,40 @@ public class Player : MonoBehaviour
             {
                 // hack cus FindObjectsOfType is bad: enact player movement responders now
                 PlayerResponder[] playerResponders = FindObjectsOfType<PlayerResponder>();
+                Vector3 targetPosition = default; // guaranteed to be non-zero after the next checks
 
                 // hmm I guess since this is a tile-based game we only want to move one axis at a time (new to me)
                 if (movementIntent.x != 0)
                 {
-                    moveTargetPosition = new Vector3(transform.position.x + LevelManager.singleton.tileSize * Mathf.Sign(movementIntent.x), transform.position.y, transform.position.z);
+                    targetPosition = new Vector3(transform.position.x + LevelManager.singleton.tileSize * Mathf.Sign(movementIntent.x), transform.position.y, transform.position.z);
                 }
                 else if (movementIntent.z != 0)
                 {
-                    moveTargetPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z + LevelManager.singleton.tileSize * Mathf.Sign(movementIntent.z));
+                    targetPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z + LevelManager.singleton.tileSize * Mathf.Sign(movementIntent.z));
                 }
 
                 // Check with player responders that we can move in this direction
                 bool hasBeenBlocked = false;
                 foreach (var playerResponder in playerResponders)
                 {
-                    if (playerResponder.blocksPlayer && playerResponder.DoesOccupyPosition(moveTargetPosition))
+                    if (playerResponder.blocksPlayer && playerResponder.DoesOccupyPosition(targetPosition))
                     {
                         hasBeenBlocked = true;
                     }
                 }
 
                 // turn towards the tile even if we were blocked
-                transform.rotation = Quaternion.LookRotation(moveTargetPosition - transform.position);
+                transform.rotation = Quaternion.LookRotation(targetPosition - transform.position);
 
                 if (!hasBeenBlocked)
                 {
-                    moveSourcePosition = transform.position;
-                    moveTargetPosition = LevelManager.singleton.GetSnappedPosition(moveTargetPosition);
-
-                    moveProgess = 0f;
-                    isMoving = true;
+                    movable.MoveTo(targetPosition);
+                    
 
                     if (movingChangesTime)
                     {
                         // advance/reverse time
-                        int targetTime = Mathf.RoundToInt(moveTargetPosition.x - positionOfZeroTime.x);
+                        int targetTime = Mathf.RoundToInt(targetPosition.x - positionOfZeroTime.x);
                         if (targetTime != TimeManager.singleton.currentTime)
                         {
                             TimeManager.singleton.StepTimeBy(targetTime - TimeManager.singleton.currentTime);
@@ -93,25 +88,12 @@ public class Player : MonoBehaviour
                     foreach (var movementResponder in playerResponders)
                         movementResponder.onPlayerMoved?.Invoke(1);
 
-                    LevelManager.singleton.OnPlayerSteppedTo(moveTargetPosition);
+                    LevelManager.singleton.OnPlayerSteppedTo(targetPosition);
                 }
                 else
                 {
                     Debug.Log("can't move here due to blocking object");
                 }
-            }
-        }
-        else
-        {
-            // blend towards target position
-            moveProgess += moveDuration > 0f ? Time.deltaTime / moveDuration : 1f - moveProgess;
-
-            transform.position = Vector3.Lerp(moveSourcePosition, moveTargetPosition, movementCurve.Evaluate(moveProgess));
-
-            if (moveProgess >= 1f)
-            {
-                transform.position = LevelManager.singleton.GetSnappedPosition(transform.position);
-                isMoving = false;
             }
         }
     }
