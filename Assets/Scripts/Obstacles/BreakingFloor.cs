@@ -8,7 +8,7 @@ public class BreakingFloor : MonoBehaviour
     private PlayerResponder playerResponder;
 
     [Tooltip("What time the floor breaks")]
-    public int breakTime;
+    public TimeCondition breakCondition = new TimeCondition();
 
     private bool isBroken;
 
@@ -29,7 +29,7 @@ public class BreakingFloor : MonoBehaviour
 
     private void UpdateBrokenness(int currentTime)
     {
-        isBroken = currentTime >= breakTime;
+        isBroken = breakCondition.IsTrue(currentTime);
 
         // just disappear for now, we can do more later
         GetComponentInChildren<Renderer>().enabled = !isBroken;
