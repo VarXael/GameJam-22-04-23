@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class MovingObstacle : MonoBehaviour
 {
+    [System.Serializable]
     public struct TimePositionPair
     {
         public int time;
@@ -43,7 +44,14 @@ public class MovingObstacle : MonoBehaviour
         for (int i = 1; i < timePositions.Length; i++)
             Gizmos.DrawLine(timePositions[i - 1].position, timePositions[1].position);
 
+        GUIStyle labelStyle = new GUIStyle(GUI.skin.label);
+        labelStyle.fontSize = 58;
+        Handles.color = Color.yellow;
         for (int i = 0; i < timePositions.Length; i++)
-            Handles.Label(timePositions[i].position, i.ToString(), EditorStyles.boldLabel);
+        {
+            Handles.SphereHandleCap(0, timePositions[i].position, Quaternion.identity, 0.25f, EventType.Repaint);
+            Handles.zTest = UnityEngine.Rendering.CompareFunction.Always;
+            Handles.Label(timePositions[i].position, i.ToString(), labelStyle);
+        }
     }
 }
