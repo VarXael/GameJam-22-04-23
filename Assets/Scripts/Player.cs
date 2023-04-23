@@ -45,11 +45,13 @@ public class Player : MonoBehaviour
                 // hack cus FindObjectsOfType is bad: enact player movement responders now
                 PlayerResponder[] playerResponders = FindObjectsOfType<PlayerResponder>();
                 Vector3 targetPosition = default; // guaranteed to be non-zero after the next checks
+                int desiredTimeOffset = 0;
 
                 // hmm I guess since this is a tile-based game we only want to move one axis at a time (new to me)
                 if (movementIntent.x != 0)
                 {
                     targetPosition = new Vector3(transform.position.x + LevelManager.singleton.tileSize * Mathf.Sign(movementIntent.x), transform.position.y, transform.position.z);
+                    desiredTimeOffset = Mathf.RoundToInt(Mathf.Sign(movementIntent.x));
                 }
                 else if (movementIntent.z != 0)
                 {
@@ -73,14 +75,12 @@ public class Player : MonoBehaviour
                 {
                     movable.MoveTo(targetPosition);
                     
-
                     if (movingChangesTime)
                     {
                         // advance/reverse time
-                        int targetTime = Mathf.RoundToInt(targetPosition.x - positionOfZeroTime.x);
-                        if (targetTime != TimeManager.singleton.currentTime)
+                        if (desiredTimeOffset != 0)
                         {
-                            TimeManager.singleton.StepTimeBy(targetTime - TimeManager.singleton.currentTime);
+                            TimeManager.singleton.StepTimeBy(desiredTimeOffset);
                         }
                     }
 
