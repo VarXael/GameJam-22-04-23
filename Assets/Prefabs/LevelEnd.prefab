@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2975630676468241191}
   - component: {fileID: 1544869287053684033}
   - component: {fileID: 9049163513971257865}
+  - component: {fileID: 3309287421987588828}
   m_Layer: 0
   m_Name: LevelEnd
   m_TagString: Untagged
@@ -68,6 +69,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d6a85c438e3e894d87c5b9b28a72528, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  unlockCondition:
+    chain: 0
+    comparison: 0
+    time: 0
+    children: []
+--- !u!114 &3309287421987588828
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4696801439416210469}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37cc2945fbc4acb49adc0961287252b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onTimeChanged:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1001 &5897131887172620642
 PrefabInstance:
   m_ObjectHideFlags: 0
